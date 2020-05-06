@@ -23,10 +23,7 @@
           var inputContainerNode = document.querySelector("#email-input");
 
           var emailInput = new EmailInput(inputContainerNode, {
-            placeholder: "add more people...",
-            onListChange: function (emails) {
-              console.log(emails);
-            },
+            placeholder: "add more people..."
           });
 
           emailInput.emails.on("append", function (addedEmails, emails) {

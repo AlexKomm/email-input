@@ -93,8 +93,6 @@ import EmailStorage from './email-storage';
 
   const defaultOptions = {
     placeholder: "Add more",
-    initialEmails: [],
-    onListChange: null,
   };
 
   class EmailInput {
@@ -181,10 +179,6 @@ import EmailStorage from './email-storage';
           e.preventDefault();
         }
       };
-
-      if (options.onListChange) {
-        this.onListChange = options.onListChange;
-      }
 
       this.emails.on("append", (addedEmails) => {
         appendEmails(emailsList, addedEmails);
