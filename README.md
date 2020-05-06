@@ -25,16 +25,6 @@ var emailInput = new EmailInput(inputContainerNode, {
 });
 ```
 
-### initialEmails
-
-List of initial email values
-
-```
-var emailInput = new EmailInput(inputContainerNode, {
-  initialEmails: ['john@miro.com', 'akommv@gmail.com', 'foobar@bar.bazz']
-});
-```
-
 ## API
 
 ### setEmails(arrayOfEmailAddresses)
@@ -45,29 +35,83 @@ Replaces all entered emails with new ones
 emailsInput.setEmails(['email@miro.com', 'alex@gmail.com']);
 ```
 
+### getEmails()
+
+Returns list of all email addresses
+
+```
+emailsInput.getEmails() // ['email@miro.com', 'alexander@miro.com']
+```
+
 ### emails
 
-Returns list of all email addresses and flag indicating whether each email address is valid or not
+Reference to email storage. See below for more information
+
+## Events
+
+You can subscribe directly to EmailStorage events:
+
+### append
+
+Event is fired when email is appended to list. This happens during input and pasting from clipboard
 
 ```
-emailsInput.emails // [{ value: 'email@miro.com', valid: true }, { value: 'foobar', valid: false }]
-```
-
-### onListChange
-
-Setter for listening email list changes event. It can also be set during initialization phase with initialOptions parameter 'onListChange'. Callback function accepts one parameter - array of all added emails.
-
-```
-var emailInput = new EmailInput(inputContainerNode, {
-  onListChange: function(emails) {
-    console.log(emails);
-  },
+emailInput.emails.on("append", function (addedEmails, emails) {
+  console.log(["append", addedEmails, emails]);
 });
 ```
-or
+
+### remove
+
+This event is fired when email is removed from list.
+
 ```
-emailInput.onListChange = function(addedEmails) {
-  console.log(addedEmails);
-}
+emailInput.emails.on("remove", function (
+  removedItem,
+  position,
+  emails
+) {
+  console.log(["remove", removedItem, position, emails]);
+});
 ```
+
+### replace
+
+This event is fired when email list replaced with setEmails method
+
+```
+emailInput.emails.on("replace", function (emails) {
+  console.log(["replace", emails]);
+});
+```
+
+## EmailStorage
+
+### append(...emails)
+
+Appends to the list of emails
+
+### remove(position)
+
+Removes email by list position
+
+### replace(emails)
+
+Replaces email list
+
+### on(event, callback)
+
+Subscribes to events: append, replace, remove
+
+### trigger(event)
+
+Triggers event
+
+### isValid(email)
+
+Validates email and returns boolean
+
+### exists(email)
+
+Check if provided email already exists
 
