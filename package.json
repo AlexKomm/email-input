@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "parcel build src/email-input.js --out-file email-input.min.js --no-content-hash",
-    "buildStyles": "parcel build src/style.scss --out-file style.min.css --no-content-hash",
+    "build": "parcel build src/email-input.js --public-url ./dist/ --out-file email-input.min.js --no-content-hash",
+    "buildStyles": "parcel build src/style.scss --public-url ./dist/ --out-file style.min.css --no-content-hash",
     "format": "prettier --write \"src/**/*.{js,jsx}\"",
     "lint": "eslint \"src/**/*.{js,jsx}\" --quiet"
   },
