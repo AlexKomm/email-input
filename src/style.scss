@@ -1,0 +1,46 @@
+@import 'normalize.css';
+
+body {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 14px;
+  line-height: 24px;
+}
+
+.button {
+  background: #4262FF;
+  border-radius: 6px;
+  color: #FFFFFF;
+  font-size: 14px;
+  line-height: 24px;
+  padding: 7px 16px;
+  text-align: center;
+}
+
+.email-form {
+  max-width: 540px;
+  margin: 24px auto;
+
+  background: #FFFFFF;
+  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+
+  &__header {
+    font-size: 20px;
+    line-height: 27px;
+    color: #050038;
+    margin-bottom: 24px;
+  }
+
+  &__content {
+    padding: 32px 50px;
+    background: #F8F8F7;
+  }
+
+  &__footer {
+    padding: 32px 50px;
+  }
+
+  .button {
+    margin-right: 16px;
+  }
+}

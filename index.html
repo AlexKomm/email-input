@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Email Input</title>
+  <link rel="stylesheet" href="./dist/style.min.css">
+  <link rel="stylesheet" href="./dist/email-input.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <section class="email-form">
+    <div class="email-form__content">
+      <header class="email-form__header">
+        Share <strong>Board name</strong> with others
+      </header>
+      <div id="email-input"></div>
+      <script src="./dist/email-input.min.js"></script>
+      <script>
+        var inputContainerNode = document.querySelector('#email-input');
+
+        var emailInput = new EmailInput(inputContainerNode, {
+          placeholder: 'add more people...',
+          initialEmails: ['john@miro.com', 'akommv@gmail.com', 'foobar@bar.bazz'],
+          onListChange: function(emails) {
+            console.log(emails);
+          },
+        });
+
+        function addEmail() {
+          var emails = emailsInput.emails.map(function(item) { return item.value; });
+          emailsInput.setEmails(...emails, 'user' + (++emails.length) + '@miro.com');
+        }
+
+        function getEmailsCount() {
+          alert(emailsInput.emails.length);
+        }
+      </script>
+    </div>
+    <footer class="email-form__footer">
+      <button class="button" onclick="addEmail();">Add email</button>
+      <button class="button" onclick="getEmailsCount();">Get emails count</button>
+    </footer>
+  </section>
+</body>
+</html>
