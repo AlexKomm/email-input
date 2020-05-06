@@ -13,6 +13,8 @@
 </script>
 ```
 
+All emails are stored in hidden field (delimited by comma) for sending result to the backend.
+
 ## Options
 
 ### placeholder
