@@ -28,12 +28,12 @@
         });
 
         function addEmail() {
-          var emails = emailsInput.emails.map(function(item) { return item.value; });
-          emailsInput.setEmails(...emails, 'user' + (++emails.length) + '@miro.com');
+          var emails = emailInput.emails.map(function(item) { return item.value; });
+          emailInput.setEmails(...emails, 'user' + (++emails.length) + '@miro.com');
         }
 
         function getEmailsCount() {
-          alert(emailsInput.emails.length);
+          alert(emailInput.emails.length);
         }
       </script>
     </div>
