@@ -1,6 +1,6 @@
 import "./email-input.scss";
 
-import { isEmailValid } from "./utils";
+import EmailStorage from './email-storage';
 
 ((global) => {
   const createSelectionContainer = () => {
@@ -33,6 +33,14 @@ import { isEmailValid } from "./utils";
 
     return inputField;
   };
+
+  const createHidden = () => {
+    const inputField = document.createElement("input");
+    inputField.setAttribute("type", "hidden");
+    inputField.value = '';
+
+    return inputField;
+  }
 
   const createEmailItem = (email) => {
     const emailNode = createListItem();
@@ -72,7 +80,7 @@ import { isEmailValid } from "./utils";
     listNode.removeChild(listNode.childNodes[position]);
   };
 
-  const appendEmails = (listNode, ...emails) => {
+  const appendEmails = (listNode, emails) => {
     const emailItemsFragment = emails.reduce((acc, email) => {
       const emailItem = createEmailItem(email);
 
@@ -83,10 +91,6 @@ import { isEmailValid } from "./utils";
     listNode.insertBefore(emailItemsFragment, listNode.lastChild);
   };
 
-  const isEmailAlreadyAdded = (email, existingEmails) => {
-    return existingEmails.some((current) => current.value === email);
-  };
-
   const defaultOptions = {
     placeholder: "Add more",
     initialEmails: [],
@@ -94,21 +98,16 @@ import { isEmailValid } from "./utils";
   };
 
   class EmailInput {
-    onListChange;
-
-    emails = [];
+    emails = new EmailStorage();
 
     constructor(element, options = {}) {
       this.element = element;
 
       options = { ...defaultOptions, ...options };
 
-      if (options.onListChange) {
-        this.onListChange = options.onListChange;
-      }
-
       const emailsList = createList();
       const emailInput = createEmailInput(options.placeholder);
+      const resultHidden = createHidden();
 
       const listItem = createListItem();
       listItem.classList.add("email-input__item--input");
@@ -118,10 +117,9 @@ import { isEmailValid } from "./utils";
 
       const selectionContainer = createSelectionContainer();
       selectionContainer.appendChild(emailsList);
+      selectionContainer.appendChild(resultHidden);
 
       this.element.appendChild(selectionContainer);
-
-      this.setEmails(...options.initialEmails);
 
       const handleClick = (e) => {
         if (e.target.classList.contains("email-input__remove")) {
@@ -130,12 +128,7 @@ import { isEmailValid } from "./utils";
             listItem
           );
 
-          this.emails.splice(removedItemIndex, 1);
-          removeEmail(emailsList, removedItemIndex);
-
-          if (this.onListChange) {
-            this.onListChange(this.emails);
-          }
+          this.emails.remove(removedItemIndex);
         }
       };
 
@@ -147,15 +140,8 @@ import { isEmailValid } from "./utils";
             return;
           }
 
-          if (!isEmailAlreadyAdded(email, this.emails)) {
-            const emailRecord = { value: email, valid: isEmailValid(email) };
-
-            this.emails.push(emailRecord);
-            appendEmails(emailsList, emailRecord);
-
-            if (this.onListChange) {
-              this.onListChange(this.emails);
-            }
+          if (!this.emails.exists(email)) {
+            this.emails.append(email);
           }
 
           emailInput.value = "";
@@ -167,15 +153,8 @@ import { isEmailValid } from "./utils";
           const email = e.target.value;
 
           if (email.length > 0) {
-            if (!isEmailAlreadyAdded(email, this.emails)) {
-              const emailRecord = { value: email, valid: isEmailValid(email) };
-
-              this.emails.push(emailRecord);
-              appendEmails(emailsList, emailRecord);
-
-              if (this.onListChange) {
-                this.onListChange(this.emails);
-              }
+            if (!this.emails.exists(email)) {
+              this.emails.append(email);
             }
 
             emailInput.value = "";
@@ -190,23 +169,37 @@ import { isEmailValid } from "./utils";
           const pastedEmails = input.split(",").reduce((acc, item) => {
             const email = item.trim();
 
-            if (email.length > 0 && !isEmailAlreadyAdded(email, this.emails)) {
-              acc.push({ value: email, valid: isEmailValid(email) });
+            if (email.length > 0 && !this.emails.exists(email)) {
+              acc.push(email);
             }
 
             return acc;
           }, []);
 
-          this.emails.push(...pastedEmails);
-          appendEmails(emailsList, ...pastedEmails);
+          this.emails.append(...pastedEmails);
 
           e.preventDefault();
-
-          if (this.onListChange) {
-            this.onListChange(this.emails);
-          }
         }
       };
+
+      if (options.onListChange) {
+        this.onListChange = options.onListChange;
+      }
+
+      this.emails.on("append", (addedEmails) => {
+        appendEmails(emailsList, addedEmails);
+        resultHidden.value = this.getEmails().join(',');
+      });
+
+      this.emails.on("remove", (removedItem, position) => {
+        removeEmail(emailsList, position);
+        resultHidden.value = this.getEmails().join(',');
+      });
+
+      this.emails.on("replace", (emails) => {
+        replaceEmails(emailsList, emails);
+        resultHidden.value = this.getEmails().join(',');
+      });
 
       selectionContainer.addEventListener("click", handleClick);
       selectionContainer.addEventListener("input", handleInput);
@@ -214,19 +207,12 @@ import { isEmailValid } from "./utils";
       selectionContainer.addEventListener("paste", handlePaste);
     }
 
-    setEmails(...emails) {
-      this.emails = emails.map((email) => {
-        return { value: email, valid: isEmailValid(email) };
-      });
+    getEmails() {
+      return this.emails.data.map((item) => item.value);
+    }
 
-      const list = this.element.querySelector(".email-input__list");
-      replaceEmails(list, this.emails);
-
-      if (this.onListChange) {
-        this.onListChange(this.emails);
-      }
-
-      return this;
+    setEmails(emails) {
+      this.emails.replace(emails);
     }
   }
 
